@@ -1,0 +1,15 @@
+services:
+  demo:
+    image: collectorreg.azurecr.io/demo
+    container_name: demo
+    build: .
+    ports:
+      - "8010:80"
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - NODE_ENV=production
+
+networks:
+  collector:
