@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Origin Form - Plain HTML Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #f5f5f5;
+    }
+
+    .header {
+      background-color: #ffffff;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .form-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+      font-size: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Origin Form - Plain HTML Demo</h1>
+  </div>
+
+  <div class="form-wrapper">
+    <div class="loading" id="loading">Loading form...</div>
+    <!-- Origin form component will be inserted here -->
+  </div>
+
+  <script>
+    // Configuration object - customize these values according to your environment
+    const CONFIG = {
+      // API URLs - Update these to match your environment
+      baseUrlGateway: 'http://your-gateway-url:port',
+      baseUrlAuthenticator: 'http://your-authenticator-url:port/v1',
+      baseUrlPublicInfrastructure: 'http://your-infrastructure-url:port/public/infrastructure',
+      baseUrlInfrastructure: 'http://your-infrastructure-url:port/infrastructure',
+      baseUrlDocuments: 'http://your-documents-url:port/documents',
+      baseUrlBusiness: 'http://your-business-url:port/web',
+      baseUrlSmartBank: 'http://your-smartbank-url:port',
+
+      // Authentication - Replace with your actual tokens
+      clientId: 'your-client-id',
+      token: 'your-access-token',
+      refreshToken: 'your-refresh-token',
+
+      // Configuration UUID - The ID of the form configuration to load
+      configUuid: 'your-config-uuid',
+
+      // Component settings
+      isDemoMode: false,          // Set to true for demo mode
+      isDebug: false,             // Set to true to enable debug logging
+      env: 'Config',              // Environment: 'Config', 'Dev', 'Prod', etc.
+      showDisplayMode: false,     // Show/hide display mode toggle
+      showLanguageSelector: true, // Show/hide language selector
+      currentLanguageIso: 'ro'    // Default language: 'ro', 'en', etc.
+    };
+
+    /**
+     * Parse URL query parameters to override default configuration
+     */
+    function parseQueryParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      // Override config with query params if provided
+      if (urlParams.has('configUuid')) {
+        CONFIG.configUuid = urlParams.get('configUuid');
+      }
+      if (urlParams.has('refreshToken')) {
+        CONFIG.refreshToken = urlParams.get('refreshToken');
+      }
+      if (urlParams.has('language')) {
+        CONFIG.currentLanguageIso = urlParams.get('language');
+      }
+      if (urlParams.has('env')) {
+        CONFIG.env = urlParams.get('env');
+      }
+      if (urlParams.has('debug')) {
+        CONFIG.isDebug = urlParams.get('debug') === 'true';
+      }
+      if (urlParams.has('demo')) {
+        CONFIG.isDemoMode = urlParams.get('demo') === 'true';
+      }
+    }
+
+    /**
+     * Initialize the origin form component
+     */
+    function initializeOriginForm() {
+      // Parse any query parameters first
+      parseQueryParams();
+
+      // Create the origin-form-element
+      const originFormElement = document.createElement('app-origin-form');
+
+      // Set attributes
+      originFormElement.setAttribute('id', 'originForm');
+      originFormElement.setAttribute('isDemoMode', CONFIG.isDemoMode.toString());
+      originFormElement.setAttribute('isDebug', CONFIG.isDebug.toString());
+      originFormElement.setAttribute('env', CONFIG.env);
+      originFormElement.setAttribute('showDisplayMode', CONFIG.showDisplayMode.toString());
+      originFormElement.setAttribute('showLanguageSelector', CONFIG.showLanguageSelector.toString());
+      originFormElement.setAttribute('currentLanguageIso', CONFIG.currentLanguageIso);
+      originFormElement.setAttribute('configUuid', CONFIG.configUuid);
+
+      // Set complex configuration object as a property
+      originFormElement.configComponent = {
+        Token: CONFIG.token,
+        RefreshToken: CONFIG.refreshToken,
+        BaseUrlGateway: CONFIG.baseUrlGateway,
+        BaseUrlAuthenticator: CONFIG.baseUrlAuthenticator,
+        BaseUrlInfrastructure: CONFIG.baseUrlInfrastructure,
+        BaseUrlPublicInfrastructure: CONFIG.baseUrlPublicInfrastructure,
+        BaseUrlDocuments: CONFIG.baseUrlDocuments,
+        BaseUrlBusiness: CONFIG.baseUrlBusiness,
+        BaseUrlSmartBank: CONFIG.baseUrlSmartBank,
+        ClientId: CONFIG.clientId
+      };
+
+      // Remove loading message
+      const loadingElement = document.getElementById('loading');
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+
+      // Append the component to the form wrapper
+      const formWrapper = document.querySelector('.form-wrapper');
+      formWrapper.appendChild(originFormElement);
+
+      console.log('Origin Form initialized with config:', CONFIG);
+    }
+
+    /**
+     * Setup event listeners for form events (optional)
+     */
+    function setupEventListeners() {
+      // Listen for custom events from the origin form component
+      document.addEventListener('formSubmitted', (event) => {
+        console.log('Form submitted:', event.detail);
+      });
+
+      document.addEventListener('formError', (event) => {
+        console.error('Form error:', event.detail);
+      });
+
+      document.addEventListener('formValidationError', (event) => {
+        console.warn('Form validation error:', event.detail);
+      });
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeOriginForm();
+        setupEventListeners();
+      });
+    } else {
+      initializeOriginForm();
+      setupEventListeners();
+    }
+  </script>
+
+  <!--
+    Note: You need to include the origin-form web component bundle before this script runs.
+    Add the script tag with the path to your origin-form bundle:
+    <script src="path/to/origin-form-bundle.js"></script>
+
+    Or if you're using a CDN:
+    <script src="https://your-cdn.com/origin-form/latest/bundle.js"></script>
+  -->
+</body>
+</html>
