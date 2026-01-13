@@ -1,27 +1,131 @@
-# OriginClientApp
+# Origin Form - Angular Example
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.8.
+This is an example Angular application demonstrating how to integrate the `@qbs-origin/origin-form` component.
 
-## Development server
+## Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```bash
+npm install
+```
 
-## Code scaffolding
+## Running the Application
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```bash
+npm start
+```
+
+Navigate to `http://localhost:4200/`
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+npm run build
+```
 
-## Running unit tests
+The build artifacts will be stored in the `dist/` directory.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Dependencies
 
-## Running end-to-end tests
+This example uses the following public npm packages:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- [@qbs-origin/origin-form](https://www.npmjs.com/package/@qbs-origin/origin-form) - Origin Form component
+- [@qbs-origin/sign-lib](https://www.npmjs.com/package/@qbs-origin/sign-lib) - Signature library
 
-## Further help
+## Integration Guide
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### 1. Install the packages
+
+```bash
+npm install @qbs-origin/origin-form @qbs-origin/sign-lib
+```
+
+### 2. Import the module
+
+In your Angular module (e.g., `app.module.ts` or a shared module):
+
+```typescript
+import { OriginFormModule } from '@qbs-origin/origin-form';
+
+@NgModule({
+  imports: [
+    // ...other imports
+    OriginFormModule
+  ]
+})
+export class AppModule { }
+```
+
+### 3. Configure the component
+
+Create a configuration object with your API endpoints and authentication:
+
+```typescript
+import { InputConfig } from '@qbs-origin/origin-form';
+
+const config: InputConfig = {
+  Token: 'your-access-token',
+  RefreshToken: 'your-refresh-token',
+  BaseUrlGateway: 'https://your-gateway-url',
+  BaseUrlAuthenticator: 'https://your-authenticator-url/v1',
+  BaseUrlInfrastructure: 'https://your-infrastructure-url/infrastructure',
+  BaseUrlPublicInfrastructure: 'https://your-infrastructure-url/public/infrastructure',
+  BaseUrlDocuments: 'https://your-documents-url/documents',
+  BaseUrlBusiness: 'https://your-business-url/web',
+  BaseUrlSmartAccounts: 'https://your-smart-accounts-url/smart-accounts',
+  ClientId: 'your-client-id',
+};
+```
+
+### 4. Use in your template
+
+```html
+<app-origin-form
+  [configComponent]="config"
+  [configUuid]="'your-config-uuid'"
+  [isDemoMode]="false"
+  [isDebug]="false"
+  [showDisplayMode]="false"
+  [showLanguageSelector]="true"
+  [currentLanguageIso]="'ro'">
+</app-origin-form>
+```
+
+### 5. Angular.json configuration
+
+Add external dependencies for Node.js modules and assets path:
+
+```json
+{
+  "architect": {
+    "build": {
+      "options": {
+        "externalDependencies": ["fs", "path"],
+        "assets": [
+          "src/assets",
+          {
+            "glob": "**/*",
+            "input": "./node_modules/@qbs-origin/origin-form/lib/assets",
+            "output": "/assets/"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+## Configuration Options
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `configComponent` | `InputConfig` | API configuration object |
+| `configUuid` | `string` | UUID of the form configuration to load |
+| `isDemoMode` | `boolean` | Enable demo mode |
+| `isDebug` | `boolean` | Enable debug logging |
+| `showDisplayMode` | `boolean` | Show display mode toggle |
+| `showLanguageSelector` | `boolean` | Show language selector |
+| `currentLanguageIso` | `string` | Default language ISO code (e.g., 'ro', 'en') |
+
+## Support
+
+For issues or questions, please contact the Origin Form development team.
