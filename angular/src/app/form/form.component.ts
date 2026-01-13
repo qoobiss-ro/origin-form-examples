@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { InputConfig } from 'origin-form';
+import { InputConfig } from '@qbs-origin/origin-form';
 import { ProxyService } from '../services/proxy.service';
 import { ActivatedRoute } from '@angular/router';
 

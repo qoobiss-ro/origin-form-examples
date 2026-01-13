@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { InputConfig } from 'origin-form';
+import { InputConfig } from '@qbs-origin/origin-form';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from './appconfig.service';
 
@@ -21,6 +21,7 @@ export class ProxyService {
     BaseUrlPublicInfrastructure: 'http://10.9.1.1:5581/public/infrastructure',
     BaseUrlDocuments: 'http://10.9.1.1:5581/documents',
     BaseUrlBusiness: 'http://10.9.1.1:5581/web',
+    BaseUrlSmartAccounts: 'http://10.9.1.1:5581/smart-accounts',
     ClientId: 'backoffice',
   };
   constructor(

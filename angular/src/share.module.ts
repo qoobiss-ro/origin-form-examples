@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { FormComponent } from './app/form/form.component';
-import { OriginFormModule } from 'origin-form';
+import { OriginFormModule } from '@qbs-origin/origin-form';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({

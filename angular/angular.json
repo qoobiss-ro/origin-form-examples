@@ -18,11 +18,12 @@
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
+            "externalDependencies": ["fs", "path"],
             "assets": [
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/origin-form/src/lib/assets",
+                "input": "./node_modules/@qbs-origin/origin-form/lib/assets",
                 "output": "/assets/"
               },
               "src/config",
