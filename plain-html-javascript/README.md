@@ -13,32 +13,27 @@ This demo shows the simplest way to embed the Origin Form web component in a sta
 ## Files
 
 - `index.html` - Main HTML file with the Origin Form integration
+- `bundle.js` - The Origin Form web component bundle (pre-built)
+- `bundle.js.map` - Source map for debugging
+- `3rdpartylicenses.txt` - Third-party licenses information
 
 ## Prerequisites
 
 Before using this example, you need:
 
-1. The Origin Form web component bundle (JavaScript file)
-2. Valid authentication tokens (token and refresh token)
-3. Access to the required API endpoints
+1. Valid authentication tokens (token and refresh token)
+2. Access to the required API endpoints
+3. A valid configuration UUID
 
 ## Setup
 
-### 1. Include the Web Component Bundle
+### 1. Web Component Bundle (Already Included)
 
-Add the Origin Form web component bundle to your HTML. You can do this in one of two ways:
+The `bundle.js` file is already included in this directory and is loaded in the `<head>` section of `index.html`:
 
-**Option A: Local bundle**
 ```html
-<script src="path/to/origin-form-bundle.js"></script>
+<script src="bundle.js"></script>
 ```
-
-**Option B: CDN (if available)**
-```html
-<script src="https://your-cdn.com/origin-form/latest/bundle.js"></script>
-```
-
-Add this script tag in the `<head>` section or before the closing `</body>` tag, but **before** the main application script.
 
 ### 2. Configure the Application
 
@@ -75,20 +70,7 @@ const CONFIG = {
 
 ### 3. Run the Application
 
-Simply open `index.html` in a web browser:
-
-```bash
-# On Windows
-start index.html
-
-# On macOS
-open index.html
-
-# On Linux
-xdg-open index.html
-```
-
-Or serve it using a local web server:
+Serve the files using a local web server:
 
 ```bash
 # Using Python 3
@@ -102,6 +84,8 @@ php -S localhost:8000
 ```
 
 Then navigate to `http://localhost:8000/index.html`
+
+**Note:** Opening `index.html` directly in the browser (file:// protocol) may not work due to CORS restrictions. Use a local web server.
 
 ## URL Parameters
 
@@ -171,10 +155,11 @@ document.addEventListener('formValidationError', (event) => {
 
 ### Component not rendering
 
-1. Check that the web component bundle is loaded before the initialization script
+1. Check that `bundle.js` is in the same directory as `index.html`
 2. Verify that the component name is correct (`<app-origin-form>`)
 3. Check browser console for errors
 4. Ensure all required attributes and properties are set
+5. Make sure you're using a web server (not file:// protocol)
 
 ### Authentication errors
 
@@ -187,7 +172,7 @@ document.addEventListener('formValidationError', (event) => {
 
 1. Check that the `configUuid` is correct
 2. Verify API connectivity
-4. Check browser network tab for failed requests
+3. Check browser network tab for failed requests
 
 ## Comparison with Other Integration Methods
 
