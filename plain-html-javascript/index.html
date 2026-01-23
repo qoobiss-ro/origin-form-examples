@@ -45,7 +45,26 @@
       color: #666;
     }
   </style>
-  <!-- Origin Form Web Component Bundle -->
+
+  <!-- Check auth BEFORE loading Angular bundle -->
+  <script>
+    (function() {
+      // Check for auth in URL params
+      const params = new URLSearchParams(window.location.search);
+      const hasToken = params.has('token') && params.get('token');
+      const hasRefreshToken = params.has('refreshToken') && params.get('refreshToken');
+
+      if (!hasToken || !hasRefreshToken) {
+        // Redirect to login immediately, before Angular loads
+        window.location.replace('login.html');
+        // Stop page execution
+        document.write('Redirecting to login...');
+        throw new Error('No auth - redirecting to login');
+      }
+    })();
+  </script>
+
+  <!-- Origin Form Web Component Bundle - only loads if auth check passed -->
   <script src="bundle.js"></script>
 </head>
 <body>
@@ -59,80 +78,54 @@
   </div>
 
   <script>
-    // Configuration object - customize these values according to your environment
-    const CONFIG = {
-      // API URLs - Update these to match your environment
-      baseUrlGateway: 'http://your-gateway-url:port',
-      baseUrlAuthenticator: 'http://your-authenticator-url:port/v1',
-      baseUrlPublicInfrastructure: 'http://your-infrastructure-url:port/public/infrastructure',
-      baseUrlInfrastructure: 'http://your-infrastructure-url:port/infrastructure',
-      baseUrlDocuments: 'http://your-documents-url:port/documents',
-      baseUrlBusiness: 'http://your-business-url:port/web',
-      baseUrlSmartBank: 'http://your-smartbank-url:port',
-
-      // Authentication - Replace with your actual tokens
-      clientId: 'your-client-id',
-      token: 'your-access-token',
-      refreshToken: 'your-refresh-token',
-
-      // Configuration UUID - The ID of the form configuration to load
-      configUuid: 'your-config-uuid',
-
-      // Component settings
-      isDemoMode: false,          // Set to true for demo mode
-      isDebug: false,             // Set to true to enable debug logging
-      env: 'Config',              // Environment: 'Config', 'Dev', 'Prod', etc.
-      showDisplayMode: false,     // Show/hide display mode toggle
-      showLanguageSelector: true, // Show/hide language selector
-      currentLanguageIso: 'ro'    // Default language: 'ro', 'en', etc.
-    };
+    // Configuration loaded from sessionStorage and URL params
+    let CONFIG = {};
 
     /**
-     * Parse URL query parameters to override default configuration
+     * Load configuration from sessionStorage (set by login page)
      */
-    function parseQueryParams() {
-      const urlParams = new URLSearchParams(window.location.search);
+    function loadConfig() {
+      // Load API config
+      const apiConfig = sessionStorage.getItem('originFormApiConfig');
+      if (apiConfig) {
+        try {
+          Object.assign(CONFIG, JSON.parse(apiConfig));
+        } catch (e) {
+          console.warn('Failed to parse API config:', e);
+        }
+      }
 
-      // Override config with query params if provided
-      if (urlParams.has('configUuid')) {
-        CONFIG.configUuid = urlParams.get('configUuid');
-      }
-      if (urlParams.has('refreshToken')) {
-        CONFIG.refreshToken = urlParams.get('refreshToken');
-      }
-      if (urlParams.has('language')) {
-        CONFIG.currentLanguageIso = urlParams.get('language');
-      }
-      if (urlParams.has('env')) {
-        CONFIG.env = urlParams.get('env');
-      }
-      if (urlParams.has('debug')) {
-        CONFIG.isDebug = urlParams.get('debug') === 'true';
-      }
-      if (urlParams.has('demo')) {
-        CONFIG.isDemoMode = urlParams.get('demo') === 'true';
-      }
+      // Load tokens and settings from URL params
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.has('token')) CONFIG.token = params.get('token');
+      if (params.has('refreshToken')) CONFIG.refreshToken = params.get('refreshToken');
+      if (params.has('configUuid')) CONFIG.configUuid = params.get('configUuid');
+      if (params.has('language')) CONFIG.currentLanguageIso = params.get('language');
+      if (params.has('env')) CONFIG.env = params.get('env');
+      if (params.has('debug')) CONFIG.isDebug = params.get('debug') === 'true';
+      if (params.has('demo')) CONFIG.isDemoMode = params.get('demo') === 'true';
+      if (params.has('showDisplayMode')) CONFIG.showDisplayMode = params.get('showDisplayMode') === 'true';
+      if (params.has('showLanguageSelector')) CONFIG.showLanguageSelector = params.get('showLanguageSelector') === 'true';
     }
 
     /**
      * Initialize the origin form component
      */
     function initializeOriginForm() {
-      // Parse any query parameters first
-      parseQueryParams();
+      loadConfig();
 
       // Create the origin-form-element
-      const originFormElement = document.createElement('app-origin-form');
+      const originFormElement = document.createElement('origin-form-element');
 
       // Set attributes
       originFormElement.setAttribute('id', 'originForm');
-      originFormElement.setAttribute('isDemoMode', CONFIG.isDemoMode.toString());
-      originFormElement.setAttribute('isDebug', CONFIG.isDebug.toString());
+      originFormElement.setAttribute('isDemoMode', String(CONFIG.isDemoMode));
+      originFormElement.setAttribute('isDebug', String(CONFIG.isDebug));
       originFormElement.setAttribute('env', CONFIG.env);
-      originFormElement.setAttribute('showDisplayMode', CONFIG.showDisplayMode.toString());
-      originFormElement.setAttribute('showLanguageSelector', CONFIG.showLanguageSelector.toString());
+      originFormElement.setAttribute('showDisplayMode', String(CONFIG.showDisplayMode));
+      originFormElement.setAttribute('showLanguageSelector', String(CONFIG.showLanguageSelector));
       originFormElement.setAttribute('currentLanguageIso', CONFIG.currentLanguageIso);
-      originFormElement.setAttribute('configUuid', CONFIG.configUuid);
 
       // Set complex configuration object as a property
       originFormElement.configComponent = {
@@ -148,35 +141,23 @@
         ClientId: CONFIG.clientId
       };
 
-      // Remove loading message
-      const loadingElement = document.getElementById('loading');
-      if (loadingElement) {
-        loadingElement.remove();
-      }
+      // Set configUuid as property
+      originFormElement.configUuid = CONFIG.configUuid;
 
-      // Append the component to the form wrapper
-      const formWrapper = document.querySelector('.form-wrapper');
-      formWrapper.appendChild(originFormElement);
+      // Remove loading message and append form
+      document.getElementById('loading')?.remove();
+      document.querySelector('.form-wrapper').appendChild(originFormElement);
 
-      console.log('Origin Form initialized with config:', CONFIG);
+      console.log('Origin Form initialized');
     }
 
     /**
-     * Setup event listeners for form events (optional)
+     * Setup event listeners for form events
      */
     function setupEventListeners() {
-      // Listen for custom events from the origin form component
-      document.addEventListener('formSubmitted', (event) => {
-        console.log('Form submitted:', event.detail);
-      });
-
-      document.addEventListener('formError', (event) => {
-        console.error('Form error:', event.detail);
-      });
-
-      document.addEventListener('formValidationError', (event) => {
-        console.warn('Form validation error:', event.detail);
-      });
+      document.addEventListener('formSubmitted', (e) => console.log('Form submitted:', e.detail));
+      document.addEventListener('formError', (e) => console.error('Form error:', e.detail));
+      document.addEventListener('formValidationError', (e) => console.warn('Validation error:', e.detail));
     }
 
     // Initialize when DOM is ready
@@ -190,6 +171,5 @@
       setupEventListeners();
     }
   </script>
-
 </body>
 </html>

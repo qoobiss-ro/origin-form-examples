@@ -1,0 +1,22 @@
+{
+  "baseUrlGateway": "https://your-api-gateway.com",
+  "baseUrlAuthenticator": "https://your-api-gateway.com/authenticator",
+  "baseUrlPublicInfrastructure": "https://your-api-gateway.com/public/infrastructure",
+  "baseUrlInfrastructure": "https://your-api-gateway.com/infrastructure",
+  "baseUrlDocuments": "https://your-api-gateway.com/documents",
+  "baseUrlBusiness": "https://your-api-gateway.com/web",
+  "baseUrlSmartBank": "https://your-api-gateway.com/smartaccounts",
+  "clientId": "your-client-id",
+  "clientSecret": "",
+  "username": "",
+  "password": "",
+  "configUuid": "your-config-uuid",
+  "isDemoMode": false,
+  "isDebug": true,
+  "env": "Config",
+  "showDisplayMode": true,
+  "showLanguageSelector": true,
+  "currentLanguageIso": "ro",
+  "scope": "apiName offline_access",
+  "grantType": "password"
+}
