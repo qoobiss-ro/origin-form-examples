@@ -167,6 +167,8 @@ Set these directly on the element object:
   - `BaseUrlBusiness` - Business service URL
   - `BaseUrlSmartBank` - SmartBank service URL
   - `ClientId` - OAuth client ID
+- `initFlowValues` - String - JSON string with pre-filled values for form fields
+- `fillData` - Object - Object containing data to pre-fill form fields including `initFlowValues`
 
 ### Events
 
@@ -185,6 +187,92 @@ document.addEventListener('formValidationError', (event) => {
   console.warn('Form validation error:', event.detail);
 });
 ```
+
+## Using initFlowValues
+
+The `initFlowValues` feature allows you to pre-fill form fields with values when initializing the form. This is useful for:
+- Pre-populating fields with data from external systems
+- Passing contextual information to the form
+- Setting default values dynamically
+
+### Configuration in Origin
+
+**Important:** The structure of `initFlowValues` must be configured in the **Origin application configuration**. When setting up your form configuration in Origin, you define which fields can be pre-filled and their expected structure in the JSON schema. Contact your Origin administrator to configure the `initFlowValues` schema for your form.
+
+### Usage in JavaScript
+
+You can pass `initFlowValues` either as a JSON string or through the `fillData` property:
+
+```javascript
+// Option 1: Using initFlowValues directly as a JSON string
+const initFlowValues = JSON.stringify({
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john.doe@example.com',
+  address: {
+    street: '123 Main St',
+    city: 'Bucharest'
+  }
+});
+
+originFormElement.initFlowValues = initFlowValues;
+
+// Option 2: Using fillData object
+originFormElement.fillData = {
+  initFlowValues: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com'
+  }
+};
+```
+
+### Complete Example
+
+Here's how to initialize the form with pre-filled values:
+
+```javascript
+function initializeOriginForm() {
+  const originFormElement = document.createElement('origin-form-element');
+
+  // Set basic attributes
+  originFormElement.setAttribute('id', 'originForm');
+  originFormElement.setAttribute('isDemoMode', 'false');
+  originFormElement.setAttribute('isDebug', 'true');
+  originFormElement.setAttribute('env', 'Config');
+  originFormElement.setAttribute('showLanguageSelector', 'true');
+  originFormElement.setAttribute('currentLanguageIso', 'ro');
+
+  // Set authentication config
+  originFormElement.configComponent = {
+    Token: 'your-access-token',
+    RefreshToken: 'your-refresh-token',
+    BaseUrlGateway: 'https://your-gateway-url',
+    // ... other config properties
+  };
+
+  // Set configUuid
+  originFormElement.configUuid = 'your-config-uuid';
+
+  // Set initFlowValues to pre-fill form fields
+  originFormElement.initFlowValues = JSON.stringify({
+    firstName: 'John',
+    lastName: 'Doe',
+    phoneNumber: '+40712345678'
+  });
+
+  // Add to DOM
+  document.querySelector('.form-wrapper').appendChild(originFormElement);
+}
+```
+
+### How Field Mapping Works
+
+The values in `initFlowValues` are mapped to form fields using a naming convention:
+- Nested objects are flattened with underscore separators
+- For example, `{ address: { street: '123 Main St' } }` creates a field named `initFlowValues_address_street`
+
+The fields available for pre-filling depend on your form configuration in Origin.
 
 ## Troubleshooting
 

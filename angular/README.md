@@ -125,6 +125,66 @@ Add external dependencies for Node.js modules and assets path:
 | `showDisplayMode` | `boolean` | Show display mode toggle |
 | `showLanguageSelector` | `boolean` | Show language selector |
 | `currentLanguageIso` | `string` | Default language ISO code (e.g., 'ro', 'en') |
+| `initFlowValues` | `string` | JSON string with pre-filled values for form fields |
+| `fillData` | `object` | Object containing data to pre-fill form fields including `initFlowValues` |
+
+## Using initFlowValues
+
+The `initFlowValues` feature allows you to pre-fill form fields with values when initializing the form. This is useful for:
+- Pre-populating fields with data from external systems
+- Passing contextual information to the form
+- Setting default values dynamically
+
+### Configuration in Origin
+
+The structure of `initFlowValues` must be configured in the **Origin application configuration**. When setting up your form configuration in Origin, you define which fields can be pre-filled and their expected structure in the JSON schema.
+
+### Usage in Angular
+
+You can pass `initFlowValues` either as a JSON string or through the `fillData` object:
+
+```typescript
+// Option 1: Using initFlowValues directly as a JSON string
+const initFlowValues = JSON.stringify({
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john.doe@example.com',
+  address: {
+    street: '123 Main St',
+    city: 'Bucharest'
+  }
+});
+
+// In your template:
+<app-origin-form
+  [configComponent]="config"
+  [configUuid]="'your-config-uuid'"
+  [initFlowValues]="initFlowValues">
+</app-origin-form>
+
+// Option 2: Using fillData object
+const fillData = {
+  initFlowValues: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com'
+  }
+};
+
+<app-origin-form
+  [configComponent]="config"
+  [configUuid]="'your-config-uuid'"
+  [fillData]="fillData">
+</app-origin-form>
+```
+
+### How Field Mapping Works
+
+The values in `initFlowValues` are mapped to form fields using a naming convention:
+- Nested objects are flattened with underscore separators
+- For example, `{ address: { street: '123 Main St' } }` creates a field named `initFlowValues_address_street`
+
+The fields available for pre-filling depend on your form configuration in Origin. Contact your Origin administrator to configure the `initFlowValues` schema for your form.
 
 ## Support
 
