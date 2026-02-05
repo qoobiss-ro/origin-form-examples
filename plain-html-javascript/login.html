@@ -84,7 +84,8 @@
 
     input[type="text"],
     input[type="password"],
-    select {
+    select,
+    textarea {
       padding: 10px 12px;
       border: 1px solid #ddd;
       border-radius: 4px;
@@ -94,9 +95,42 @@
 
     input[type="text"]:focus,
     input[type="password"]:focus,
-    select:focus {
+    select:focus,
+    textarea:focus {
       outline: none;
       border-color: #007bff;
+    }
+
+    textarea.json-input {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      min-height: 150px;
+      resize: vertical;
+      white-space: pre;
+    }
+
+    textarea.json-input.invalid {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+    }
+
+    textarea.json-input.valid {
+      border-color: #28a745;
+    }
+
+    .json-validation-message {
+      font-size: 12px;
+      margin-top: 4px;
+      min-height: 16px;
+    }
+
+    .json-validation-message.error {
+      color: #dc3545;
+    }
+
+    .json-validation-message.success {
+      color: #28a745;
     }
 
     .checkbox-group {
@@ -368,6 +402,23 @@
                 </div>
               </div>
             </div>
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label for="initFlowValues">Init Flow Values (JSON)</label>
+                <textarea
+                  id="initFlowValues"
+                  name="initFlowValues"
+                  class="json-input"
+                  placeholder='{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com"
+}'
+                  oninput="validateJsonInput(this)"
+                ></textarea>
+                <div id="initFlowValuesValidation" class="json-validation-message"></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -439,6 +490,22 @@
           element.checked = config[field];
         }
       });
+
+      // initFlowValues - format JSON nicely if it exists
+      const initFlowValuesEl = document.getElementById('initFlowValues');
+      if (initFlowValuesEl && config.initFlowValues !== undefined) {
+        if (typeof config.initFlowValues === 'object') {
+          initFlowValuesEl.value = JSON.stringify(config.initFlowValues, null, 2);
+        } else if (typeof config.initFlowValues === 'string') {
+          try {
+            const parsed = JSON.parse(config.initFlowValues);
+            initFlowValuesEl.value = JSON.stringify(parsed, null, 2);
+          } catch (e) {
+            initFlowValuesEl.value = config.initFlowValues;
+          }
+        }
+        validateJsonInput(initFlowValuesEl);
+      }
     }
 
     /**
@@ -525,7 +592,8 @@
         isDemoMode: document.getElementById('isDemoMode').checked,
         isDebug: document.getElementById('isDebug').checked,
         showDisplayMode: document.getElementById('showDisplayMode').checked,
-        showLanguageSelector: document.getElementById('showLanguageSelector').checked
+        showLanguageSelector: document.getElementById('showLanguageSelector').checked,
+        initFlowValues: document.getElementById('initFlowValues').value.trim()
       };
     }
 
@@ -590,6 +658,19 @@
       };
       sessionStorage.setItem('originFormApiConfig', JSON.stringify(apiConfig));
 
+      // Store initFlowValues separately (only if valid JSON)
+      if (formData.initFlowValues) {
+        try {
+          JSON.parse(formData.initFlowValues); // Validate JSON
+          sessionStorage.setItem('originFormInitFlowValues', formData.initFlowValues);
+        } catch (e) {
+          // Invalid JSON, don't store it
+          sessionStorage.removeItem('originFormInitFlowValues');
+        }
+      } else {
+        sessionStorage.removeItem('originFormInitFlowValues');
+      }
+
       // Navigate to form page
       window.location.href = `index.html?${params.toString()}`;
     }
@@ -629,6 +710,36 @@
       } catch (error) {
         showError(error.message || 'An error occurred during login');
         setLoading(false);
+      }
+    }
+
+    /**
+     * Validate JSON input and show feedback
+     */
+    function validateJsonInput(textarea) {
+      const validationEl = document.getElementById(textarea.id + 'Validation');
+      const value = textarea.value.trim();
+
+      if (!value) {
+        textarea.classList.remove('valid', 'invalid');
+        validationEl.textContent = '';
+        validationEl.className = 'json-validation-message';
+        return true;
+      }
+
+      try {
+        JSON.parse(value);
+        textarea.classList.remove('invalid');
+        textarea.classList.add('valid');
+        validationEl.textContent = 'Valid JSON';
+        validationEl.className = 'json-validation-message success';
+        return true;
+      } catch (e) {
+        textarea.classList.remove('valid');
+        textarea.classList.add('invalid');
+        validationEl.textContent = 'Invalid JSON: ' + e.message;
+        validationEl.className = 'json-validation-message error';
+        return false;
       }
     }
 

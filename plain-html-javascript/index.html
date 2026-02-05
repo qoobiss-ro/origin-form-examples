@@ -127,6 +127,19 @@
       originFormElement.setAttribute('showLanguageSelector', String(CONFIG.showLanguageSelector));
       originFormElement.setAttribute('currentLanguageIso', CONFIG.currentLanguageIso);
 
+      // Load initFlowValues from sessionStorage (set by login page)
+      const storedInitFlowValues = sessionStorage.getItem('originFormInitFlowValues');
+      if (storedInitFlowValues) {
+        try {
+          // Validate it's valid JSON before setting
+          JSON.parse(storedInitFlowValues);
+          originFormElement.initFlowValues = storedInitFlowValues;
+          console.log('initFlowValues loaded from config');
+        } catch (e) {
+          console.warn('Invalid initFlowValues JSON in sessionStorage:', e);
+        }
+      }
+
       // Set complex configuration object as a property
       originFormElement.configComponent = {
         Token: CONFIG.token,
