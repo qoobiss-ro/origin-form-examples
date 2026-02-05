@@ -18,5 +18,21 @@
   "showLanguageSelector": true,
   "currentLanguageIso": "ro",
   "scope": "apiName offline_access",
-  "grantType": "password"
+  "grantType": "password",
+  "initFlowValues": {
+    "test-v": "abc123",
+    "prop1": "valoare random",
+    "nume": "John Doe",
+    "email": "john.doe@example.com",
+    "telefon": "+40 712 345 678",
+    "oras": "Cluj-Napoca",
+    "judet": "Cluj",
+    "descriere": "Text de test pentru verificarea formularului.",
+    "program": {
+      "deschidere": "08:30",
+      "inchidere": "17:00"
+    },
+    "active": true,
+    "timestamp": "2026-02-05T10:23:45Z"
+  }
 }
