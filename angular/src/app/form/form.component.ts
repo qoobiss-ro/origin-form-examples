@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class FormComponent {
   applicationUuid: string | undefined;
+  appDataUuid: string = '';
   env: string = 'Config';
   isLoading = true;
   isDemoMode = false;
@@ -31,6 +32,7 @@ export class FormComponent {
     ) {
     this.route.queryParams.subscribe(async (params) => {
       this.applicationUuid = params['uuid'];
+      this.appDataUuid = params['appDataUuid'] || '';
       this.env = params['env'] || 'Config';
       this.currentLanguageIso = params['language'] || 'ro';
       const refreshToken = this.proxyService.refreshToken;

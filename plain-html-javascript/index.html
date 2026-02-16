@@ -107,6 +107,7 @@
       if (params.has('demo')) CONFIG.isDemoMode = params.get('demo') === 'true';
       if (params.has('showDisplayMode')) CONFIG.showDisplayMode = params.get('showDisplayMode') === 'true';
       if (params.has('showLanguageSelector')) CONFIG.showLanguageSelector = params.get('showLanguageSelector') === 'true';
+      if (params.has('appDataUuid')) CONFIG.appDataUuid = params.get('appDataUuid');
     }
 
     /**
@@ -154,8 +155,11 @@
         ClientId: CONFIG.clientId
       };
 
-      // Set configUuid as property
+      // Set configUuid and appDataUuid as properties
       originFormElement.configUuid = CONFIG.configUuid;
+      if (CONFIG.appDataUuid) {
+        originFormElement.appDataUuid = CONFIG.appDataUuid;
+      }
 
       // Remove loading message and append form
       document.getElementById('loading')?.remove();
