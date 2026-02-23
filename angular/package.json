@@ -26,7 +26,7 @@
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "@ngxs/store": "^18.1.6",
-    "@qbs-origin/origin-form": "^0.6.2",
+    "@qbs-origin/origin-form": "^0.8.7",
     "angular-tabler-icons": "^3.26.0",
     "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
